@@ -24,7 +24,7 @@ def detect_separator(file_content, encoding):
 def parse_csv(file_content):
     encoding, _ = detect_encoding(file_content)
     separator = detect_separator(file_content, encoding)
-    df = pd.read_csv(StringIO(file_content.decode(encoding)), sep=separator, low_memory=False)
+    df = pd.read_csv(StringIO(file_content.decode(encoding)), sep=separator,dtype=str, low_memory=False)
     df.replace("", pd.NA, inplace=True)
     return df
 
@@ -44,7 +44,7 @@ def parse_google_sheets(url):
 def element_to_dict(elem):
     d = {}
     for child in elem:
-        d[ET.QName(child).localname] = child.text if child.text is not None else pd.NA
+        d[ET.QName(child).localname] = str(child.text) if child.text is not None else pd.NA
     return d
 
 def find_repeating_sibling_elements(root):
