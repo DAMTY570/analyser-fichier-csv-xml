@@ -39,6 +39,20 @@ def parse_google_sheets(url):
     response.raise_for_status()
     return parse_csv(response.content)
 
+def download_url_content(url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3',
+        'Referer': 'https://junglevet.fr/',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+    }
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.content
+
 # Fonctions pour un parseur XML scalable
 
 def element_to_dict(elem):
@@ -107,10 +121,10 @@ def process_file():
     elif url_key in st.session_state and st.session_state[url_key]:
         file_url = st.session_state[url_key].strip()
         try:
-            response = requests.get(file_url)
-            response.raise_for_status()
-            file_content = response.content
-            content_type = response.headers.get("Content-Type", "").lower()
+            # Utiliser la nouvelle fonction avec les en-têtes
+            file_content = download_url_content(file_url)
+            content_type = ""
+            
             if file_url.endswith(".csv") or "csv" in content_type:
                 st.session_state["dataframe"] = parse_csv(file_content)
             elif file_url.endswith(".xml") or "xml" in content_type:
