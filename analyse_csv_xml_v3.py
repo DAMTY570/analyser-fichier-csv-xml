@@ -44,9 +44,13 @@ def parse_google_sheets(url):
 def element_to_dict(elem):
     d = {}
     for child in elem:
-        d[ET.QName(child).localname] = str(child.text) if child.text is not None else pd.NA
+        # Vérifier si le texte est None OU une chaîne vide après suppression des espaces
+        if child.text is None or str(child.text).strip() == '':
+            d[ET.QName(child).localname] = pd.NA
+        else:
+            d[ET.QName(child).localname] = str(child.text)
     return d
-
+    
 def find_repeating_sibling_elements(root):
     children = list(root)
     if not children:
